@@ -8,11 +8,11 @@ import {
   CategoryScale,
   Tooltip,
   Legend,
+  BarElement,
 } from "chart.js";
 
-ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend);
+ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend, BarElement);
 
-// Função para formatar data e hora para exibição
 const formatarData = (data) => {
   const d = new Date(data);
   const dia = String(d.getDate()).padStart(2, "0");
@@ -22,7 +22,6 @@ const formatarData = (data) => {
   return `${dia}/${mes} - ${hora}:${minuto}`;
 };
 
-// Função para formatar data diária no mesmo formato que o label do gráfico
 const formatarDataDia = (data) => {
   const d = new Date(data);
   const dia = String(d.getDate()).padStart(2, "0");
@@ -30,17 +29,28 @@ const formatarDataDia = (data) => {
   return `${dia}/${mes}`;
 };
 
+const criarLabelsUnicasPorDia = (labelsHora) => {
+  const datasVistas = new Set();
+  return labelsHora.map(label => {
+    const dia = label.split(" - ")[0];
+    if (datasVistas.has(dia)) {
+      return "";
+    } else {
+      datasVistas.add(dia);
+      return dia;
+    }
+  });
+};
+
 export default function Grafico({ dados, dadosDiarios }) {
   const labelsHora = dados.map((item) => formatarData(item.hora));
   const temperaturas = dados.map((item) => item.temperatura);
   const chuvas = dados.map((item) => item.chuva);
 
-  // Formatar as datas diárias
   const diasFormatados = dadosDiarios.map((item) => formatarDataDia(item.data));
   const temperaturaMin = dadosDiarios.map((item) => item.temperaturaMin);
   const temperaturaMax = dadosDiarios.map((item) => item.temperaturaMax);
 
-  // Preencher os dados diários com nulls para alinhamento com as horas
   const temperaturaMinInterpolada = labelsHora.map((label) => {
     const dataLabel = label.split(" - ")[0];
     const index = diasFormatados.indexOf(dataLabel);
@@ -53,54 +63,54 @@ export default function Grafico({ dados, dadosDiarios }) {
     return index !== -1 ? temperaturaMax[index] : null;
   });
 
+  const labelsX = criarLabelsUnicasPorDia(labelsHora);
+
   const data = {
-    labels: labelsHora,
+    labels: labelsX,
     datasets: [
       {
-        label: "Temperatura (°C)",
+        label: "Temp (°C)",
         data: temperaturas,
         borderColor: "#ff6384",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
-        tension: 0.4,
+        tension: 0.6,
         fill: true,
-        pointRadius: 2,
-        pointHoverRadius: 6,
-        pointBorderWidth: 1,
+        pointRadius: 0,
+        borderWidth: 2,
+        yAxisID: "y1",
       },
       {
-        label: "Chuva (mm)",
-        data: chuvas,
-        borderColor: "#36a2eb",
-        backgroundColor: "rgba(54, 162, 235, 0.2)",
-        tension: 0.4,
-        fill: true,
-        pointRadius: 2,
-        pointHoverRadius: 6,
-        pointBorderWidth: 1,
-      },
-      {
-        label: "Temperatura Máxima (°C)",
+        label: "Temp Máx(°C)",
         data: temperaturaMaxInterpolada,
         borderColor: "#ffa600",
         backgroundColor: "rgba(255, 166, 0, 0.2)",
-        tension: 0.2,
+        tension: 0.4,
         fill: false,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        pointBorderWidth: 1,
+        pointRadius: 0,
+        borderWidth: 2,
         spanGaps: true,
+        yAxisID: "y1",
       },
       {
-        label: "Temperatura Mínima (°C)",
+        label: "Temp Mín (°C)",
         data: temperaturaMinInterpolada,
         borderColor: "#00cc99",
         backgroundColor: "rgba(0, 204, 153, 0.2)",
-        tension: 0.2,
+        tension: 0.4,
         fill: false,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        pointBorderWidth: 1,
+        pointRadius: 0,
+        borderWidth: 2,
         spanGaps: true,
+        yAxisID: "y1",
+      },
+      {
+        label: "Chuva",
+        data: chuvas,
+        type: "bar",
+        backgroundColor: "rgba(54, 162, 235, 0.5)",
+        borderColor: "rgba(54, 162, 235, 0.7)",
+        borderWidth: 1,
+        yAxisID: "y2",
       },
     ],
   };
@@ -108,32 +118,89 @@ export default function Grafico({ dados, dadosDiarios }) {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: {
+      mode: "index",
+      intersect: false,
+    },
+    stacked: false,
+    layout: {
+      padding: {
+        bottom: 30, // espaço entre o gráfico e a legenda
+      },
+    },
     plugins: {
       title: {
         display: true,
-        text: "Temperatura, Chuva e Máximas/Mínimas",
         font: { size: 20, weight: "bold", family: "Inter" },
         color: "#000000",
+        text: "Previsão por hora",
       },
       legend: {
-        labels: { color: "#000000", font: { size: 14 } },
+        labels: {
+          color: "#000000",
+          font: { size: 14 },
+          boxWidth: 12,    // reduz tamanho do bloco da legenda
+          padding: 20,     // espaçamento entre bloco e texto
+        },
+      },
+      tooltip: {
+        enabled: true,
+        mode: "index",
+        intersect: false,
       },
     },
     scales: {
       x: {
-        ticks: { color: "#000000" },
-        grid: { color: "#cccccc" },
+        ticks: {
+          color: "#333",
+          font: { size: 11 },
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: false,
+        },
+        grid: {
+          display: false,
+          drawBorder: false,
+        },
       },
-      y: {
-        ticks: { color: "#000000" },
-        grid: { color: "#cccccc" },
-        beginAtZero: true,
+      y1: {
+        type: "linear",
+        display: true,
+        position: "left",
+        ticks: {
+          color: "#ff6384",
+          beginAtZero: true,
+        },
+        grid: {
+          display: false,
+        },
+      },
+      y2: {
+        type: "linear",
+        display: true,
+        position: "right",
+        ticks: {
+          color: "#36a2eb",
+          beginAtZero: true,
+        },
+        grid: {
+          display: false,
+        },
       },
     },
   };
 
   return (
-    <div style={{ height: "400px", width: "100%" }}>
+    <div
+      style={{
+        height: "400px",
+        width: "100%",
+        backgroundColor: "#f9fafb",
+        borderRadius: "12px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        padding: "16px",
+      }}
+    >
       <Line data={data} options={options} />
     </div>
   );
