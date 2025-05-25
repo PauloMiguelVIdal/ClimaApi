@@ -2,8 +2,20 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Grafico from "../components/Grafico";
 import Navbar from "../components/Navbar";
-import Container from "../components/Container";
 import ClimaAtualCard from "../components/ClimaAtualCard";
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title,
+  CategoryScale,
+  Tooltip,
+  Legend,
+  BarElement,
+} from "chart.js";
+
+ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend, BarElement);
 
 const weatherCodeMap = {
   0: "Céu limpo",
