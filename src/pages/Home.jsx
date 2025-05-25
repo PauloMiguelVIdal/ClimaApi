@@ -44,6 +44,9 @@ export default function Home() {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [cidade, setCidade] = useState("");
+  const [dados, setDados] = useState([]);
+  const [background, setBackground] = useState("padrao");
+
 
 
 
@@ -61,6 +64,48 @@ export default function Home() {
       });
   }, []);
   
+  const imagensClima = {
+    chuva: "/backgrounds/chuva.png",
+    neblina: "/backgrounds/neblina.png",
+    neve: "/backgrounds/neve.png",
+    nuvem: "/backgrounds/nuvem.png",
+    tempestade: "/backgrounds/tempestade.png",
+    tempo_limpo: "/backgrounds/tempo_limpo.png",
+    padrao: "/backgrounds/padrao.png",
+  };
+
+  useEffect(() => {
+    async function carregarDados() {
+      try {
+        const resposta = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-23.55&longitude=-46.63&current=temperature_2m,weather_code&hourly=temperature_2m");
+        const json = await resposta.json();
+
+        const codigoClima = json.current.weather_code;
+
+        const mapearCondicao = (codigo) => {
+          if ([0, 1].includes(codigo)) return "tempo_limpo";
+          if ([2, 3].includes(codigo)) return "nuvem";
+          if ([45, 48].includes(codigo)) return "neblina";
+          if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(codigo)) return "chuva";
+          if ([71, 73, 75, 77, 85, 86].includes(codigo)) return "neve";
+          if ([95, 96, 99].includes(codigo)) return "tempestade";
+          return "padrao";
+        };
+
+        const condicao = mapearCondicao(codigoClima);
+
+        setDados([{ temperatura: json.current.temperature_2m, condicao }]);
+        setBackground(condicao);
+      } catch (erro) {
+        console.error("Erro ao carregar dados:", erro);
+        setBackground("padrao");
+      }
+    }
+
+    carregarDados();
+  }, []);
+
+
   function obterEstiloClima(condicao) {
     switch (condicao.toLowerCase()) {
       case "ensolarado":
@@ -183,24 +228,28 @@ export default function Home() {
     temperaturaMax: daily.temperature_2m_max[index],
   }));
 
+  
+  const imagemDeFundo = imagensClima[background];
+  const gradiente = obterEstiloClima(atual?.descricao || "padrão")?.background;
+
   return (
-    <div style={{ ...estiloClima, minHeight: "100vh", padding: "20px" }}>
-      <Navbar onBuscarCidade={handleBuscarCidade} />
-
-      <ClimaAtualCard climaAtual={atual} cidade={cidade} extras={extras} />
-
-      {/* <h2>Previsão por hora {cidade && `para ${cidade}`}</h2> */}
-      <Grafico dados={dadosGrafico} dadosDiarios={dadosDiarios} />
-
-      {/* <h2>Resumo diário</h2>
-      {dadosDiarios.map((item, index) => (
-        <Container
-          key={index}
-          data={item.data}
-          temperaturaMin={item.temperaturaMin}
-          temperaturaMax={item.temperaturaMax}
-        />
-      ))} */}
-    </div>
+    <>
+      <Navbar onBuscarCidade={handleBuscarCidade} condicaoClima={background} />
+      <div
+        className="min-h-screen w-full text-white"
+        style={{
+          backgroundImage: `${gradiente}, url(${imagemDeFundo})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          paddingTop: "4rem", // ou o equivalente à altura da Navbar
+        }}
+      >
+        <div className="max-w-4xl mx-auto px-4 space-y-8">
+          <ClimaAtualCard climaAtual={atual} cidade={cidade} extras={extras} />
+          <Grafico dados={dadosGrafico} dadosDiarios={dadosDiarios} />
+        </div>
+      </div>
+    </>
   );
 }

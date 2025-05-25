@@ -18,15 +18,29 @@ import SearchIcon from '@mui/icons-material/Search';
 const drawerWidth = 240;
 const API_KEY = "aaaa92c472f04655bb05c36a224af70b";
 
-function Navbar({ window, onBuscarCidade }) {
+const estilosPorCondicao = {
+  tempo_limpo: "bg-yellow-200/30 backdrop-blur-md text-yellow-900",
+  nuvem: "bg-gray-300/30 backdrop-blur-md text-gray-900",
+  chuva: "bg-blue-400/20 backdrop-blur-md text-white",
+  tempestade: "bg-gray-900/50 backdrop-blur text-white",
+  neblina: "bg-gray-500/30 backdrop-blur text-white",
+  neve: "bg-blue-100/30 backdrop-blur text-blue-900",
+  padrao: "bg-white/20 backdrop-blur text-black",
+};
+
+
+function Navbar({ window, onBuscarCidade , condicaoClima}) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
-  const [options, setOptions] = React.useState([  { label: "São Paulo, SP", lat: -23.55, lon: -46.63 },
+  const [options, setOptions] = React.useState([
+    { label: "São Paulo, SP", lat: -23.55, lon: -46.63 },
     { label: "Goiânia, GO", lat: -16.68, lon: -49.25 },
-    { label: "Natal, RN", lat: -5.79, lon: -35.21 },]);
+    { label: "Natal, RN", lat: -5.79, lon: -35.21 },
+  ]);
   const [cidadeSelecionada, setCidadeSelecionada] = React.useState(null);
   const theme = useTheme();
-
+  
+  const estiloAtual = estilosPorCondicao[condicaoClima] || estilosPorCondicao.padrao;
   const handleDrawerToggle = () => setMobileOpen(prev => !prev);
 
   const handleBuscarClick = () => {
@@ -62,48 +76,41 @@ function Navbar({ window, onBuscarCidade }) {
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
-
-  
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box
+      sx={{ width: '100%' }}
+      className={`fixed top-0 left-0 z-50 flex justify-center w-[100vw] transition-colors duration-500 ${estiloAtual}`}
+    >
       <CssBaseline />
       <AppBar
         component="nav"
         position="static"
         elevation={0}
         sx={{
-          backgroundColor: '#ffffff',
-          borderBottom: `1px solid ${theme.palette.divider}`,
+          backgroundColor: 'transparent',
+        
+          width: '100%',
+          maxWidth: '900px', // Limita largura total da navbar
         }}
       >
         <Toolbar
           sx={{
             display: 'flex',
-            justifyContent: 'space-between',
-            gap: 2,
+            justifyContent: 'center',
+            alignItems: 'center',
             paddingY: 1,
             paddingX: { xs: 1, sm: 3 },
           }}
         >
-          <IconButton
-            color="default"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
-              backgroundColor: '#f3f4f6',
+              backgroundColor: 'rgba(243, 244, 246, 0.7)',
+              backdropFilter: 'blur(4px)',
               borderRadius: 2,
               paddingX: 1,
-              width: { xs: '100%', sm: 'auto' },
-              flexGrow: 1,
+              width: '100%',
               maxWidth: 500,
               boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)',
             }}
@@ -143,7 +150,7 @@ function Navbar({ window, onBuscarCidade }) {
           </Box>
         </Toolbar>
       </AppBar>
-
+  
       <nav>
         <Drawer
           container={container}
@@ -166,6 +173,7 @@ function Navbar({ window, onBuscarCidade }) {
       </nav>
     </Box>
   );
+  
 }
 
 Navbar.propTypes = {
