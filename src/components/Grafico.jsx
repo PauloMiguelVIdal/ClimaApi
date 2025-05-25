@@ -10,6 +10,7 @@ import {
   Legend,
   BarElement,
 } from "chart.js";
+import { useMemo } from "react";
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend, BarElement);
 
@@ -42,6 +43,32 @@ const criarLabelsUnicasPorDia = (labelsHora) => {
   });
 };
 
+function obterEstiloDeFundo(horarioLocal) {
+  const hora = new Date(horarioLocal).getHours();
+
+  if (hora >= 5 && hora < 11) {
+    // Manhã
+    return {
+      background: "radial-gradient(circle at top, #FFFAE5, #87CEFA)",
+    };
+  } else if (hora >= 11 && hora < 17) {
+    // Tarde
+    return {
+      background: "radial-gradient(circle at center, #FFFACD, #00BFFF)",
+    };
+  } else if (hora >= 17 && hora < 20) {
+    // Entardecer
+    return {
+      background: "radial-gradient(circle at bottom, #FFD580, #1E90FF)",
+    };
+  } else {
+    // Noite/Madrugada
+    return {
+      background: "radial-gradient(circle at center, #0d1b2a, #1b263b)",
+    };
+  }
+}
+
 export default function Grafico({ dados, dadosDiarios }) {
   const labelsHora = dados.map((item) => formatarData(item.hora));
   const temperaturas = dados.map((item) => item.temperatura);
@@ -64,6 +91,14 @@ export default function Grafico({ dados, dadosDiarios }) {
   });
 
   const labelsX = criarLabelsUnicasPorDia(labelsHora);
+  const estiloFundo = useMemo(() => {
+    const agora = new Date();
+    console.log("Hora atual:", agora.toString());
+    console.log("Hora atual (getHours()):", agora.getHours());
+    return obterEstiloDeFundo(agora);
+  }, []);
+  
+  
 
   const data = {
     labels: labelsX,
@@ -125,7 +160,7 @@ export default function Grafico({ dados, dadosDiarios }) {
     stacked: false,
     layout: {
       padding: {
-        bottom: 30, // espaço entre o gráfico e a legenda
+        bottom: 30,
       },
     },
     plugins: {
@@ -150,11 +185,11 @@ export default function Grafico({ dados, dadosDiarios }) {
         callbacks: {
           title: function (tooltipItems) {
             const index = tooltipItems[0].dataIndex;
-            return labelsHora[index]; // aqui mostra a hora no tooltip
+            return labelsHora[index]; // mostra data e hora real
           },
         },
       },
-    },    
+    },
     scales: {
       x: {
         ticks: {
@@ -196,17 +231,19 @@ export default function Grafico({ dados, dadosDiarios }) {
     },
   };
 
+  
+
   return (
-    <div
-      style={{
-        height: "400px",
-        width: "100%",
-        backgroundColor: "#f9fafb",
-        borderRadius: "12px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        padding: "16px",
-      }}
-    >
+<div
+  style={{
+    height: "400px",
+    width: "100%",
+    ...estiloFundo,
+    borderRadius: "12px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    padding: "16px",
+  }}
+>
       <Line data={data} options={options} />
     </div>
   );

@@ -46,6 +46,7 @@ export default function Home() {
   const [cidade, setCidade] = useState("");
 
 
+
   useEffect(() => {
     axios.get("http://ip-api.com/json/?fields=61439")
       .then((res) => {
@@ -60,7 +61,50 @@ export default function Home() {
       });
   }, []);
   
+  function obterEstiloClima(condicao) {
+    switch (condicao.toLowerCase()) {
+      case "ensolarado":
+      case "céu limpo":
+        return {
+          background: "linear-gradient(to top, #fefcea, #f1da36)", // amarelo claro
+        };
+      case "parcialmente nublado":
+      case "nuvens dispersas":
+        return {
+          background: "linear-gradient(to top, #d7d2cc, #304352)", // cinza-azulado
+        };
+      case "nublado":
+        return {
+          background: "linear-gradient(to top, #757f9a, #d7dde8)", // cinza frio
+        };
+      case "chuva":
+      case "chuva leve":
+      case "chuvisco":
+        return {
+          background: "linear-gradient(to top, #314755, #26a0da)", // azul escuro
+        };
+      case "tempestade":
+        return {
+          background: "linear-gradient(to top, #000000, #434343)", // preto/cinza escuro
+        };
+      case "neve":
+        return {
+          background: "linear-gradient(to top, #e6dada, #274046)", // branco-azulado
+        };
+      case "neblina":
+      case "névoa":
+        return {
+          background: "linear-gradient(to top, #bdc3c7, #2c3e50)", // cinza esfumaçado
+        };
+      default:
+        return {
+          background: "#e0f7fa", // padrão leve
+        };
+    }
+  }
 
+  const condicaoAtual = dados[0]?.condicao || "padrão";
+  const estiloClima = obterEstiloClima(condicaoAtual);
 
   const buscarCoordenadas = async (nomeCidade) => {
     try {
@@ -141,7 +185,7 @@ export default function Home() {
   }));
 
   return (
-    <div>
+    <div style={{ ...estiloClima, minHeight: "100vh", padding: "20px" }}>
       <Navbar onBuscarCidade={handleBuscarCidade} />
 
       <ClimaAtualCard climaAtual={atual} cidade={cidade} extras={extras} />
