@@ -103,8 +103,7 @@ export default function Home() {
     }
   }
 
-  const condicaoAtual = dados[0]?.condicao || "padrão";
-  const estiloClima = obterEstiloClima(condicaoAtual);
+  const condicaoAtual = atual?.descricao || "padrão";  const estiloClima = obterEstiloClima(condicaoAtual);
 
   const buscarCoordenadas = async (nomeCidade) => {
     try {
