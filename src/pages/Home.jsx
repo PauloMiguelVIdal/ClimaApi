@@ -47,23 +47,20 @@ export default function Home() {
   const [dados, setDados] = useState([]);
   const [background, setBackground] = useState("padrao");
 
-
-
-
   useEffect(() => {
-    axios.get("https://ip-api.com/json/?fields=61439")
+    axios.get("https://ipapi.co/json/")
       .then((res) => {
-        setLatitude(res.data.lat);
-        setLongitude(res.data.lon);
-        setCidade(`${res.data.city}, ${res.data.regionName}`);
-        console.log(res.data.lat, res.data.lon);
+        setLatitude(res.data.latitude);
+        setLongitude(res.data.longitude);
+        setCidade(`${res.data.city}, ${res.data.region}`);
+        console.log(res.data.latitude, res.data.longitude);
         console.log(res);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
-  
+
   const imagensClima = {
     chuva: "/backgrounds/chuva.png",
     neblina: "/backgrounds/neblina.png",
@@ -105,50 +102,50 @@ export default function Home() {
     carregarDados();
   }, []);
 
-
   function obterEstiloClima(condicao) {
     switch (condicao.toLowerCase()) {
       case "ensolarado":
       case "céu limpo":
         return {
-          background: "linear-gradient(to top, #fefcea, #f1da36)", // amarelo claro
+          background: "linear-gradient(to top, #fefcea, #f1da36)",
         };
       case "parcialmente nublado":
       case "nuvens dispersas":
         return {
-          background: "linear-gradient(to top, #d7d2cc, #304352)", // cinza-azulado
+          background: "linear-gradient(to top, #d7d2cc, #304352)",
         };
       case "nublado":
         return {
-          background: "linear-gradient(to top, #757f9a, #d7dde8)", // cinza frio
+          background: "linear-gradient(to top, #757f9a, #d7dde8)",
         };
       case "chuva":
       case "chuva leve":
       case "chuvisco":
         return {
-          background: "linear-gradient(to top, #314755, #26a0da)", // azul escuro
+          background: "linear-gradient(to top, #314755, #26a0da)",
         };
       case "tempestade":
         return {
-          background: "linear-gradient(to top, #000000, #434343)", // preto/cinza escuro
+          background: "linear-gradient(to top, #000000, #434343)",
         };
       case "neve":
         return {
-          background: "linear-gradient(to top, #e6dada, #274046)", // branco-azulado
+          background: "linear-gradient(to top, #e6dada, #274046)",
         };
       case "neblina":
       case "névoa":
         return {
-          background: "linear-gradient(to top, #bdc3c7, #2c3e50)", // cinza esfumaçado
+          background: "linear-gradient(to top, #bdc3c7, #2c3e50)",
         };
       default:
         return {
-          background: "#e0f7fa", // padrão leve
+          background: "#e0f7fa",
         };
     }
   }
 
-  const condicaoAtual = atual?.descricao || "padrão";  const estiloClima = obterEstiloClima(condicaoAtual);
+  const condicaoAtual = atual?.descricao || "padrão";
+  const estiloClima = obterEstiloClima(condicaoAtual);
 
   const buscarCoordenadas = async (nomeCidade) => {
     try {
@@ -159,8 +156,6 @@ export default function Home() {
           limit: 1,
         },
       });
-      
-
 
       if (res.data.length > 0) {
         const { lat, lon } = res.data[0];
@@ -228,7 +223,6 @@ export default function Home() {
     temperaturaMax: daily.temperature_2m_max[index],
   }));
 
-  
   const imagemDeFundo = imagensClima[background];
   const gradiente = obterEstiloClima(atual?.descricao || "padrão")?.background;
 
@@ -242,7 +236,7 @@ export default function Home() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          paddingTop: "4rem", // ou o equivalente à altura da Navbar
+          paddingTop: "4rem",
         }}
       >
         <div className="max-w-4xl mx-auto px-4 space-y-8">
