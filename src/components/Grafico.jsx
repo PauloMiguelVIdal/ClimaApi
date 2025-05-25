@@ -6,6 +6,8 @@ import {
   LineElement,
   PointElement,
   LinearScale,
+  LineController,
+  BarController,
   Title,
   CategoryScale,
   Tooltip,
