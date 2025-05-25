@@ -48,17 +48,16 @@ export default function Home() {
   const [background, setBackground] = useState("padrao");
 
   useEffect(() => {
-    axios.get("https://ipapi.co/json/")
-      .then((res) => {
-        setLatitude(res.data.latitude);
-        setLongitude(res.data.longitude);
-        setCidade(`${res.data.city}, ${res.data.region}`);
-        console.log(res.data.latitude, res.data.longitude);
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    axios.get("https://ipinfo.io/json?token=50db8ea52f163d")
+    .then((res) => {
+      const [lat, lon] = res.data.loc.split(',');
+      setLatitude(parseFloat(lat));
+      setLongitude(parseFloat(lon));
+      setCidade(`${res.data.city}, ${res.data.region}`);
+    })
+    .catch((err) => {
+      console.error("Erro ao obter localização:", err);
+    });
   }, []);
 
   const imagensClima = {

@@ -1,4 +1,6 @@
 import { Line } from "react-chartjs-2";
+import { useMemo } from "react";
+
 import {
   Chart as ChartJS,
   LineElement,
@@ -10,7 +12,6 @@ import {
   Legend,
   BarElement,
 } from "chart.js";
-import { useMemo } from "react";
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend, BarElement);
 
@@ -29,6 +30,7 @@ const formatarDataDia = (data) => {
   const mes = String(d.getMonth() + 1).padStart(2, "0");
   return `${dia}/${mes}`;
 };
+
 
 const criarLabelsUnicasPorDia = (labelsHora) => {
   const datasVistas = new Set();
