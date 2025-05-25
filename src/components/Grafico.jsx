@@ -1,6 +1,6 @@
 import { Line } from "react-chartjs-2";
 import { useMemo } from "react";
-
+import { Chart } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   LineElement,
@@ -115,6 +115,7 @@ export default function Grafico({ dados, dadosDiarios }) {
         pointRadius: 0,
         borderWidth: 2,
         yAxisID: "y1",
+        type: "line",
       },
       {
         label: "Temp Máx(°C)",
@@ -127,6 +128,7 @@ export default function Grafico({ dados, dadosDiarios }) {
         borderWidth: 2,
         spanGaps: true,
         yAxisID: "y1",
+        type: "line",
       },
       {
         label: "Temp Mín (°C)",
@@ -139,6 +141,7 @@ export default function Grafico({ dados, dadosDiarios }) {
         borderWidth: 2,
         spanGaps: true,
         yAxisID: "y1",
+        type: "line",
       },
       {
         label: "Chuva",
@@ -148,6 +151,7 @@ export default function Grafico({ dados, dadosDiarios }) {
         borderColor: "rgba(54, 162, 235, 0.7)",
         borderWidth: 1,
         yAxisID: "y2",
+        type: "bar",
       },
     ],
   };
@@ -246,7 +250,7 @@ export default function Grafico({ dados, dadosDiarios }) {
     padding: "16px",
   }}
 >
-      <Line data={data} options={options} />
+<Chart type="bar" data={data} options={options} />
     </div>
   );
 }
