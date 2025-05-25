@@ -41,9 +41,26 @@ export default function Home() {
   const [daily, setDaily] = useState(null);
   const [atual, setAtual] = useState(null);
   const [extras, setExtras] = useState(null);
-  const [latitude, setLatitude] = useState(-23.5489);
-  const [longitude, setLongitude] = useState(-46.6388);
-  const [cidade, setCidade] = useState("São Paulo, São Paulo");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [cidade, setCidade] = useState("");
+
+
+  useEffect(() => {
+    axios.get("http://ip-api.com/json/?fields=61439")
+      .then((res) => {
+        setLatitude(res.data.lat);
+        setLongitude(res.data.lon);
+        setCidade(`${res.data.city}, ${res.data.regionName}`);
+        console.log(res.data.lat, res.data.lon);
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+  
+
 
   const buscarCoordenadas = async (nomeCidade) => {
     try {
@@ -54,6 +71,8 @@ export default function Home() {
           limit: 1,
         },
       });
+      
+
 
       if (res.data.length > 0) {
         const { lat, lon } = res.data[0];

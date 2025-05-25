@@ -139,16 +139,22 @@ export default function Grafico({ dados, dadosDiarios }) {
         labels: {
           color: "#000000",
           font: { size: 14 },
-          boxWidth: 12,    // reduz tamanho do bloco da legenda
-          padding: 20,     // espaçamento entre bloco e texto
+          boxWidth: 12,
+          padding: 20,
         },
       },
       tooltip: {
         enabled: true,
         mode: "index",
         intersect: false,
+        callbacks: {
+          title: function (tooltipItems) {
+            const index = tooltipItems[0].dataIndex;
+            return labelsHora[index]; // aqui mostra a hora no tooltip
+          },
+        },
       },
-    },
+    },    
     scales: {
       x: {
         ticks: {

@@ -2,8 +2,15 @@ import * as React from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import {
-  AppBar, Box, CssBaseline, Drawer, IconButton, Toolbar,
-  Typography, Autocomplete, TextField
+  AppBar,
+  Box,
+  CssBaseline,
+  Drawer,
+  IconButton,
+  Toolbar,
+  Autocomplete,
+  TextField,
+  useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,17 +21,16 @@ const API_KEY = "aaaa92c472f04655bb05c36a224af70b";
 function Navbar({ window, onBuscarCidade }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
-  const [options, setOptions] = React.useState([]);
+  const [options, setOptions] = React.useState([  { label: "São Paulo, SP", lat: -23.55, lon: -46.63 },
+    { label: "Goiânia, GO", lat: -16.68, lon: -49.25 },
+    { label: "Natal, RN", lat: -5.79, lon: -35.21 },]);
   const [cidadeSelecionada, setCidadeSelecionada] = React.useState(null);
+  const theme = useTheme();
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(prev => !prev);
-  };
+  const handleDrawerToggle = () => setMobileOpen(prev => !prev);
 
   const handleBuscarClick = () => {
-    if (cidadeSelecionada) {
-      onBuscarCidade(cidadeSelecionada);
-    }
+    if (cidadeSelecionada) onBuscarCidade(cidadeSelecionada);
   };
 
   React.useEffect(() => {
@@ -47,24 +53,40 @@ function Navbar({ window, onBuscarCidade }) {
         }));
         setOptions(lista);
       });
-    }, 400); // debounce
+    }, 400);
 
     return () => clearTimeout(timeout);
   }, [inputValue]);
 
-  const handleSelect = (event, novaCidade) => {
-    setCidadeSelecionada(novaCidade);
-  };
+  const handleSelect = (event, novaCidade) => setCidadeSelecionada(novaCidade);
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
+
+  
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar component="nav" position="static">
-        <Toolbar sx={{ gap: 2 }}>
+      <AppBar
+        component="nav"
+        position="static"
+        elevation={0}
+        sx={{
+          backgroundColor: '#ffffff',
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }}
+      >
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 2,
+            paddingY: 1,
+            paddingX: { xs: 1, sm: 3 },
+          }}
+        >
           <IconButton
-            color="inherit"
+            color="default"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
@@ -73,11 +95,19 @@ function Navbar({ window, onBuscarCidade }) {
             <MenuIcon />
           </IconButton>
 
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Que tempo???
-          </Typography>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#f3f4f6',
+              borderRadius: 2,
+              paddingX: 1,
+              width: { xs: '100%', sm: 'auto' },
+              flexGrow: 1,
+              maxWidth: 500,
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)',
+            }}
+          >
             <Autocomplete
               disablePortal
               options={options}
@@ -89,16 +119,24 @@ function Navbar({ window, onBuscarCidade }) {
                 typeof option === 'string' ? option : option.label
               }
               isOptionEqualToValue={(option, value) => option.label === value.label}
-              sx={{ width: 300 }}
+              sx={{ flexGrow: 1 }}
               renderInput={(params) => (
-                <TextField {...params} label="Digite a cidade" variant="filled" size="small" />
+                <TextField
+                  {...params}
+                  placeholder="Buscar cidade..."
+                  variant="standard"
+                  InputProps={{
+                    ...params.InputProps,
+                    disableUnderline: true,
+                  }}
+                />
               )}
             />
-
             <IconButton
               onClick={handleBuscarClick}
               aria-label="buscar cidade"
-              color="inherit"
+              size="small"
+              sx={{ ml: 1 }}
             >
               <SearchIcon />
             </IconButton>
@@ -115,11 +153,14 @@ function Navbar({ window, onBuscarCidade }) {
           ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+            },
           }}
         >
           <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="h6">Menu</Typography>
+            <strong>Menu</strong>
           </Box>
         </Drawer>
       </nav>
