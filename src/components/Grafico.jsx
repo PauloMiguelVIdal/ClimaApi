@@ -15,8 +15,19 @@ import {
   BarElement,
 } from "chart.js";
 
-ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip, Legend, BarElement);
-
+// Registre todos os componentes necessários
+ChartJS.register(
+  LineElement,
+  PointElement,
+  LinearScale,
+  LineController,  // Controlador para gráficos de linha
+  BarController,   // Controlador para gráficos de barra
+  Title,
+  CategoryScale,
+  Tooltip,
+  Legend,
+  BarElement
+);
 const formatarData = (data) => {
   const d = new Date(data);
   const dia = String(d.getDate()).padStart(2, "0");
