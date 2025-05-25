@@ -51,7 +51,7 @@ export default function Home() {
 
 
   useEffect(() => {
-    axios.get("http://ip-api.com/json/?fields=61439")
+    axios.get("https://ip-api.com/json/?fields=61439")
       .then((res) => {
         setLatitude(res.data.lat);
         setLongitude(res.data.lon);
