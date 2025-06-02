@@ -238,23 +238,49 @@ export default function Home() {
   const gradiente = obterEstiloClima(atual?.descricao || "padrão")?.background;
 
   return (
-    <>
-      <Navbar onBuscarCidade={handleBuscarCidade} condicaoClima={background} />
-      <div
-        className="min-h-screen w-full text-white"
-        style={{
-          backgroundImage: `${gradiente}, url(${imagemDeFundo})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          paddingTop: "4rem",
-        }}
-      >
-        <div className="max-w-4xl mx-auto px-4 space-y-8">
-          <ClimaAtualCard climaAtual={atual} cidade={cidade} extras={extras} />
-          <Grafico dados={dadosGrafico} dadosDiarios={dadosDiarios} />
-        </div>
-      </div>
-    </>
+<>
+  <Navbar onBuscarCidade={handleBuscarCidade} condicaoClima={background} />
+  <div
+    className="min-h-screen w-full flex flex-col text-white"
+    style={{
+      backgroundImage: `${gradiente}, url(${imagemDeFundo})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      paddingTop: "4rem",
+    }}
+  >
+    <div className="max-w-4xl mx-auto px-4 space-y-8 flex-grow">
+      <ClimaAtualCard climaAtual={atual} cidade={cidade} extras={extras} />
+      <Grafico dados={dadosGrafico} dadosDiarios={dadosDiarios} />
+    </div>
+
+    <footer className="text-center text-xs text-gray-200 py-4 mt-auto backdrop-blur-sm bg-black/30">
+      <p>
+        Dados de geolocalização fornecidos por{" "}
+        <a
+          href="https://ipapi.co"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          ipapi.co
+        </a>
+      </p>
+      <p>
+        Dados meteorológicos fornecidos por{" "}
+        <a
+          href="https://open-meteo.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Open-Meteo
+        </a>
+      </p>
+    </footer>
+  </div>
+</>
+
   );
 }
